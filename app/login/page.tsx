@@ -1,3 +1,6 @@
+'use client'
+
+import 'reflect-metadata';
 import * as React from 'react';
 // import './Common.css'
 import { container } from "tsyringe";
@@ -30,35 +33,35 @@ export default function Login() {
   };
 
   return (
-    <div className="h-100 d-flex align-items-center justify-content-center">
-      <div className="container w-50">
-        <div className="row mb-4">
-          <label className="col-4 align-content-center" htmlFor="username">USERNAME:</label>
-          <div className="col">
-            <TextField id="username" value={loginService.item.USERNAME} onChange={onChangeUsername} />
+    <div className="h-full flex items-center justify-center">
+      <div className="w-3/6">
+        <div className="flex items-center mb-4">
+          <label className="w-1/3 align-content-center" htmlFor="username">USERNAME:</label>
+          <div className="w-2/3">
+            <TextField id="username" style={{width: '100%'}} value={loginService.item.USERNAME} onChange={onChangeUsername} />
           </div>
         </div>
-        <div className="row mb-4">
-          <label className="col-4 align-content-center" htmlFor="password">PASSWORD:</label>
-          <div className="col">
+        <div className="flex items-center mb-4">
+          <label className="w-1/3 align-content-center" htmlFor="password">PASSWORD:</label>
+          <div className="w-2/3">
             <TextField type="password" id="password" style={{width: '100%'}} value={loginService.item.PASSWORD} onChange={onChangePassword} />
           </div>
         </div>
-        <div className="row">
-          <div className="col-4"></div>
-          <div className="col">
-            <Button label="Login" onClick={login} />
+        <div className="flex items-center">
+          <div className="w-1/3"></div>
+          <div className="w-2/3">
+            <Button variant="contained" onClick={login}>Login</Button>
           </div>
         </div>
       </div>
-      {/*<style jsx global>{`*/}
-      {/*  html, body, #root {*/}
-      {/*    height: 100%;*/}
-      {/*  }*/}
-      {/*  input {*/}
-      {/*    width: 100%;*/}
-      {/*  }*/}
-      {/*`}</style>*/}
+      <style jsx global>{`
+        html, body, #root {
+          height: 100%;
+        }
+        input {
+          width: 100%;
+        }
+      `}</style>
     </div>
   );
 }

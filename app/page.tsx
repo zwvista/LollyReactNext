@@ -18,7 +18,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GlobalVars } from '@/common/common';
-import Login from './Login';
+import Login from './login/page';
 import { useState } from "react";
 
 export default function App() {
