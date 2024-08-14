@@ -20,8 +20,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GlobalVars } from '@/common/common';
 import Login from './login/page';
 import { useState } from "react";
+import { useCookies } from 'next-client-cookies';
 
 export default function App() {
+  const cookies = useCookies();
   const appService = container.resolve(AppService);
   console.log(appService);
   const items2 = [
@@ -37,7 +39,7 @@ export default function App() {
   const [indexTab2, setIndexTab2] = useState(0);
   library.add(fas as any, far as any, fab as any);
 
-  const loggedIn = localStorage.getItem('userid');
+  const loggedIn = cookies.get('userid');
   if (!loggedIn)
     return (<Login />);
 
