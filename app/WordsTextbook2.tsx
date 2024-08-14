@@ -33,15 +33,13 @@ import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
-import { useNavigate } from "react-router-dom";
-import WordsTextbookDetail from "./WordsTextbookDetail";
-import WordsTextbookDetail2 from "./WordsTextbookDetail2";
+import WordsTextbookDetail2 from "@/components/WordsTextbookDetail2";
 
 export default function WordsTextbook2() {
   const appService = container.resolve(AppService);
   const wordsUnitService = container.resolve(WordsUnitService);
   const settingsService = container.resolve(SettingsService);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
@@ -99,7 +97,7 @@ export default function WordsTextbook2() {
 
   const dictWord = (item: MUnitWord) => {
     const index = wordsUnitService.textbookWords.indexOf(item);
-    navigate('/words-dict/textbook/' + index);
+    // navigate('/words-dict/textbook/' + index);
   };
 
   const showDetailDialog = (id: number) => {

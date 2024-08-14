@@ -24,14 +24,13 @@ import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import { PatternsService } from '@/view-models/wpp/patterns.service';
-import { useNavigate } from "react-router-dom";
-import PatternsDetail2 from "./PatternsDetail2";
+import PatternsDetail2 from "@/components/PatternsDetail2";
 
 export default function Patterns2() {
   const appService = container.resolve(AppService);
   const patternsService = container.resolve(PatternsService);
   const settingsService = container.resolve(SettingsService);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 

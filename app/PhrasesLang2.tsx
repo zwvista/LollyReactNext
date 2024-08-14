@@ -25,14 +25,13 @@ import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import { MLangPhrase } from '@/models/wpp/lang-phrase';
-import { useNavigate } from "react-router-dom";
-import PhrasesLangDetail2 from "./PhrasesLangDetail2";
+import PhrasesLangDetail2 from "@/components/PhrasesLangDetail2";
 
 export default function PhrasesLang2() {
   const appService = container.resolve(AppService);
   const phrasesLangService = container.resolve(PhrasesLangService);
   const settingsService = container.resolve(SettingsService);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 

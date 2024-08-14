@@ -30,14 +30,13 @@ import * as CopyToClipboard from 'react-copy-to-clipboard';
 import { ChangeEvent, ReactNode, SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
-import { useNavigate } from "react-router-dom";
-import WordsUnitDetail2 from "./WordsUnitDetail2";
+import WordsUnitDetail2 from "@/components/WordsUnitDetail2";
 
 export default function WordsUnit2() {
   const appService = container.resolve(AppService);
   const wordsUnitService = container.resolve(WordsUnitService);
   const settingsService = container.resolve(SettingsService);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
@@ -92,7 +91,7 @@ export default function WordsUnit2() {
 
   const dictWord = (item: MUnitWord) => {
     const index = wordsUnitService.unitWords.indexOf(item);
-    navigate('/words-dict/unit/' + index);
+    // navigate('/words-dict/unit/' + index);
   };
 
   const getNotes = (ifEmpty: boolean) => {
@@ -151,7 +150,7 @@ export default function WordsUnit2() {
         <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning">
           Retrieve Notes If Empty
         </Button>
-        <Button variant="contained" color="primary" onClick={() => navigate('/words-dict/unit/0')}>
+        <Button variant="contained" color="primary" onClick={/*() => navigate('/words-dict/unit/0')*/}>
           <span><FontAwesomeIcon icon={faBook} />Dictionary</span>
         </Button>
       </Toolbar>

@@ -34,14 +34,13 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { MLangWord } from '@/models/wpp/lang-word';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
-import { useNavigate } from "react-router-dom";
-import WordsLangDetail2 from "./WordsLangDetail2";
+import WordsLangDetail2 from "@/components/WordsLangDetail2";
 
 export default function WordsLang2() {
   const appService = container.resolve(AppService);
   const wordsLangService = container.resolve(WordsLangService);
   const settingsService = container.resolve(SettingsService);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
@@ -135,7 +134,7 @@ export default function WordsLang2() {
         <Button variant="contained" color="primary" onClick={(e: any) => onRefresh}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
-        <Button variant="contained" color="primary" onClick={() => navigate('/words-dict/lang/0')}>
+        <Button variant="contained" color="primary" onClick={/*() => navigate('/words-dict/lang/0')*/}>
           <span><FontAwesomeIcon icon={faBook} />Dictionary</span>
         </Button>
       </Toolbar>

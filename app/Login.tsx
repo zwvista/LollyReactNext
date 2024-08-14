@@ -1,12 +1,10 @@
 import * as React from 'react';
-import { Button } from 'primereact/button';
 import './Common.css'
-import { InputText } from 'primereact/inputtext';
 import { container } from "tsyringe";
 import { GlobalVars } from '@/common/common';
-import { Password } from 'primereact/password';
 import { LoginService } from '@/view-models/misc/login.service';
 import { ChangeEvent, useReducer } from "react";
+import { Button, TextField } from "@mui/material";
 
 export default function Login() {
   const loginService = container.resolve(LoginService);
@@ -37,13 +35,13 @@ export default function Login() {
         <div className="row mb-4">
           <label className="col-4 align-content-center" htmlFor="username">USERNAME:</label>
           <div className="col">
-            <InputText id="username" value={loginService.item.USERNAME} onChange={onChangeUsername} />
+            <TextField id="username" value={loginService.item.USERNAME} onChange={onChangeUsername} />
           </div>
         </div>
         <div className="row mb-4">
           <label className="col-4 align-content-center" htmlFor="password">PASSWORD:</label>
           <div className="col">
-            <Password id="password" style={{width: '100%'}} value={loginService.item.PASSWORD} onChange={onChangePassword} />
+            <TextField type="password" id="password" style={{width: '100%'}} value={loginService.item.PASSWORD} onChange={onChangePassword} />
           </div>
         </div>
         <div className="row">

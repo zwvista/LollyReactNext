@@ -6,6 +6,7 @@ import { AppBar, Tab, Tabs } from '@mui/material';
 import 'reflect-metadata';
 import { container } from "tsyringe";
 import { AppService } from '@/view-models/misc/app.service';
+import Link from "next/link";
 
 import "font-awesome/css/font-awesome.min.css";
 
@@ -15,14 +16,8 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GlobalVars } from '@/common/common';
-import Login from './components/misc/Login';
+import Login from './Login';
 import { useState } from "react";
-
-// https://stackoverflow.com/questions/53375964/using-a-link-component-with-listitem-and-typescript
-// https://stackoverflow.com/questions/51257426/how-do-you-get-material-ui-tabs-to-work-with-react-router
-function LinkTab(props: any) {
-  return <Tab component={Link} {...props} />;
-}
 
 export default function App() {
   const appService = container.resolve(AppService);
@@ -48,13 +43,16 @@ export default function App() {
   appService.getData();
   return (
     <div className="App">
-      <h2>Lolly React</h2>
+      <h2>Lolly React Next</h2>
       <AppBar position="static" color="default">
-          <Tabs value={indexTab2} onChange={(e, v) => setIndexTab2(v)} indicatorColor="primary" textColor="primary">
-            {items2.map((row: any) =>
-              <LinkTab key={row.label} label={<span><FontAwesomeIcon icon={row.icon} size="lg"/> {row.label}</span>} to={row.url} />
-            )}
-          </Tabs>
+        <Tabs value={indexTab2} onChange={(e, v) => setIndexTab2(v)} indicatorColor="primary" textColor="primary">
+          {items2.map((row: any) =>
+            // https://stackoverflow.com/questions/65471275/material-ui-tabs-with-nextjs
+            <Link href={row.url} passHref>
+              <Tab key={row.label} label={<span><FontAwesomeIcon icon={row.icon} size="lg"/> {row.label}</span>} />
+            </Link>
+          )}
+        </Tabs>
       </AppBar>}
       <Outlet/>
     </div>

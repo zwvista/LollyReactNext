@@ -34,14 +34,13 @@ import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
-import { useNavigate } from "react-router-dom";
-import PhrasesUnitDetail2 from "./PhrasesUnitDetail2";
+import PhrasesUnitDetail2 from "@/components/PhrasesUnitDetail2";
 
 export default function PhrasesUnit2() {
   const appService = container.resolve(AppService);
   const phrasesUnitService = container.resolve(PhrasesUnitService);
   const settingsService = container.resolve(SettingsService);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
