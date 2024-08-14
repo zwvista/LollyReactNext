@@ -1,57 +1,53 @@
 import * as React from 'react';
 import { container } from "tsyringe";
-import '../misc/Common.css'
+// import '../misc/Common.css'
 import { SettingsService } from '@/view-models/misc/settings.service';
 import {
   Button,
   Fab, MenuItem, Select, SelectChangeEvent,
   Table,
   TableBody,
-  TableCell, TableFooter,
+  TableCell,
   TableHead,
-  TablePagination,
-  TableRow, TextField,
+  TableRow,
+  TextField,
   Toolbar,
   Tooltip
 } from '@mui/material';
+import { PhrasesUnitService } from '@/view-models/wpp/phrases-unit.service';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faEdit, faPlus, faSync, faTrash, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowDown,
+  faArrowUp,
+  faBook,
+  faCopy,
+  faEdit,
+  faPlus, faSync,
+  faTrash,
+  faVolumeUp
+} from '@fortawesome/free-solid-svg-icons';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { PhrasesLangService } from '@/view-models/wpp/phrases-lang.service';
+import { MUnitPhrase } from '@/models/wpp/unit-phrase';
 import { googleString } from '@/common/common';
 import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
-import { MLangPhrase } from '@/models/wpp/lang-phrase';
-import PhrasesLangDetail2 from "@/components/PhrasesLangDetail2";
+import PhrasesUnitDetail2 from "@/components/PhrasesUnitDetail2";
 
-export default function PhrasesLang2() {
+export default function PhrasesUnit2() {
   const appService = container.resolve(AppService);
-  const phrasesLangService = container.resolve(PhrasesLangService);
+  const phrasesUnitService = container.resolve(PhrasesUnitService);
   const settingsService = container.resolve(SettingsService);
   // const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
-  const [rows, setRows] = useState(0);
-  const [page, setPage] = useState(1);
   const [filter, setFilter] = useState('');
   const [filterType, setFilterType] = useState(0);
   const [refreshCount, onRefresh] = useReducer(x => x + 1, 0);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
-
-  const handleChangePage = (event: any, page: any) => {
-    setPage(page + 1);
-    onRefresh();
-  };
-
-  const handleRowsPerPageChange = (event: any) => {
-    setPage(1);
-    setRows(event.target.value);
-    onRefresh();
-  };
 
   const onFilterChange = (e: SyntheticEvent) => {
     setFilter((e.nativeEvent.target as HTMLInputElement).value);
@@ -67,8 +63,8 @@ export default function PhrasesLang2() {
     onRefresh();
   };
 
-  const deletePhrase = (item: MLangPhrase) => {
-    phrasesLangService.delete(item);
+  const deletePhrase = (item: MUnitPhrase) => {
+    phrasesUnitService.delete(item);
   };
 
   const googlePhrase = (phrase: string) => {
@@ -83,19 +79,18 @@ export default function PhrasesLang2() {
   useEffect(() => {
     (async () => {
       await appService.getData();
-      setRows(settingsService.USROWSPERPAGE);
       onRefresh();
     })();
   }, []);
 
   useEffect(() => {
     (async () => {
-      await phrasesLangService.getData(page, rows, filter, filterType);
+      await phrasesUnitService.getDataInTextbook(filter, filterType);
       forceUpdate();
     })();
   }, [refreshCount]);
 
-  return !appService.isInitialized ? (<div/>) : (
+  return (
     <div>
       <Toolbar>
         <Select
@@ -111,37 +106,31 @@ export default function PhrasesLang2() {
         <Button variant="contained" color="primary" onClick={() => showDetailDialog(0)}>
           <span><FontAwesomeIcon icon={faPlus} />Add</span>
         </Button>
-        <Button variant="contained" color="primary" onClick={(e: any) => onRefresh}>
+        <Button variant="contained" color="primary" onClick={onRefresh}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
       </Toolbar>
       <Table>
         <TableHead>
           <TableRow>
-            <TablePagination
-              rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
-              colSpan={4}
-              count={phrasesLangService.langPhraseCount}
-              rowsPerPage={rows}
-              page={page - 1}
-              SelectProps={{
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleRowsPerPageChange}
-            />
-          </TableRow>
-          <TableRow>
             <TableCell>ID</TableCell>
+            <TableCell>UNIT</TableCell>
+            <TableCell>PART</TableCell>
+            <TableCell>SEQNUM</TableCell>
+            <TableCell>PHRASEID</TableCell>
             <TableCell>PHRASE</TableCell>
             <TableCell>TRANSLATION</TableCell>
             <TableCell>ACTIONS</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {phrasesLangService.langPhrases.map(row => (
+          {phrasesUnitService.unitPhrases.map(row => (
             <TableRow key={row.ID}>
               <TableCell>{row.ID}</TableCell>
+              <TableCell>{row.UNITSTR}</TableCell>
+              <TableCell>{row.PARTSTR}</TableCell>
+              <TableCell>{row.SEQNUM}</TableCell>
+              <TableCell>{row.PHRASEID}</TableCell>
               <TableCell>{row.PHRASE}</TableCell>
               <TableCell>{row.TRANSLATION}</TableCell>
               <TableCell>
@@ -177,24 +166,8 @@ export default function PhrasesLang2() {
             </TableRow>
           ))}
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
-              colSpan={4}
-              count={phrasesLangService.langPhraseCount}
-              rowsPerPage={rows}
-              page={page - 1}
-              SelectProps={{
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleRowsPerPageChange}
-            />
-          </TableRow>
-        </TableFooter>
       </Table>
-      {showDetail && <PhrasesLangDetail2 id={detailId} isDialogOpened={showDetail} handleCloseDialog={() => setShowDetail(false)} />}
+      {showDetail && <PhrasesUnitDetail2 id={detailId} isDialogOpened={showDetail} handleCloseDialog={() => setShowDetail(false)} />}
     </div>
   );
 }

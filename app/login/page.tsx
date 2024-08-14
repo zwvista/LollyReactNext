@@ -8,7 +8,7 @@ import { Button, TextField } from "@mui/material";
 
 export default function Login() {
   const loginService = container.resolve(LoginService);
-  const [, forceUpdate] = useReducer(x => x + 1, 0);
+  const [, forceUpdate] = useReducer(x => x + 1, 0, x => 0);
 
   const onChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
     loginService.item.USERNAME = e.target.value;
@@ -51,14 +51,14 @@ export default function Login() {
           </div>
         </div>
       </div>
-      <style jsx global>{`
-        html, body, #root {
-          height: 100%;
-        }
-        input {
-          width: 100%;
-        }
-      `}</style>
+      {/*<style jsx global>{`*/}
+      {/*  html, body, #root {*/}
+      {/*    height: 100%;*/}
+      {/*  }*/}
+      {/*  input {*/}
+      {/*    width: 100%;*/}
+      {/*  }*/}
+      {/*`}</style>*/}
     </div>
   );
 }

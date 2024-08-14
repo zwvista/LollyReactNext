@@ -1,42 +1,33 @@
 import * as React from 'react';
 import { container } from "tsyringe";
-import '../misc/Common.css'
+// import '../misc/Common.css'
 import { SettingsService } from '@/view-models/misc/settings.service';
 import {
   Button,
   Fab, MenuItem, Select, SelectChangeEvent,
   Table,
   TableBody,
-  TableCell,
+  TableCell, TableFooter,
   TableHead,
-  TableRow,
-  TextField,
+  TablePagination,
+  TableRow, TextField,
   Toolbar,
   Tooltip
 } from '@mui/material';
 import { PhrasesUnitService } from '@/view-models/wpp/phrases-unit.service';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowDown,
-  faArrowUp,
-  faBook,
-  faCopy,
-  faEdit,
-  faPlus, faSync,
-  faTrash,
-  faVolumeUp
-} from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faEdit, faPlus, faSync, faTrash, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { MUnitPhrase } from '@/models/wpp/unit-phrase';
 import { googleString } from '@/common/common';
+import { MUnitPhrase } from '@/models/wpp/unit-phrase';
 import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
-import PhrasesUnitDetail2 from "@/components/PhrasesUnitDetail2";
+import PhrasesTextbookDetail2 from "@/components/PhrasesTextbookDetail2";
 
-export default function PhrasesUnit2() {
+export default function PhrasesTextbook2() {
   const appService = container.resolve(AppService);
   const phrasesUnitService = container.resolve(PhrasesUnitService);
   const settingsService = container.resolve(SettingsService);
@@ -44,10 +35,24 @@ export default function PhrasesUnit2() {
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
+  const [rows, setRows] = useState(0);
+  const [page, setPage] = useState(1);
   const [filter, setFilter] = useState('');
   const [filterType, setFilterType] = useState(0);
+  const [textbookFilter, setTextbookFilter] = useState(0);
   const [refreshCount, onRefresh] = useReducer(x => x + 1, 0);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+  const handleChangePage = (event: any, page: any) => {
+    setPage(page + 1);
+    onRefresh();
+  };
+
+  const handleRowsPerPageChange = (event: any) => {
+    setPage(1);
+    setRows(event.target.value);
+    onRefresh();
+  };
 
   const onFilterChange = (e: SyntheticEvent) => {
     setFilter((e.nativeEvent.target as HTMLInputElement).value);
@@ -60,6 +65,11 @@ export default function PhrasesUnit2() {
 
   const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
     setFilterType(Number(e.target.value));
+    onRefresh();
+  };
+
+  const onTextbookFilterChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
+    setTextbookFilter(Number(e.target.value));
     onRefresh();
   };
 
@@ -79,18 +89,19 @@ export default function PhrasesUnit2() {
   useEffect(() => {
     (async () => {
       await appService.getData();
+      setRows(settingsService.USROWSPERPAGE);
       onRefresh();
     })();
   }, []);
 
   useEffect(() => {
     (async () => {
-      await phrasesUnitService.getDataInTextbook(filter, filterType);
+      await phrasesUnitService.getDataInLang(page, rows, filter, filterType, textbookFilter);
       forceUpdate();
     })();
   }, [refreshCount]);
 
-  return (
+  return !appService.isInitialized ? (<div/>) : (
     <div>
       <Toolbar>
         <Select
@@ -103,17 +114,40 @@ export default function PhrasesUnit2() {
         </Select>
         <TextField label="Filter" value={filter}
                    onChange={onFilterChange} onKeyPress={onFilterKeyPress}/>
+        <Select
+          value={textbookFilter}
+          onChange={onTextbookFilterChange}
+        >
+          {settingsService.textbookFilters.map(row =>
+            <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
+          )}
+        </Select>
         <Button variant="contained" color="primary" onClick={() => showDetailDialog(0)}>
           <span><FontAwesomeIcon icon={faPlus} />Add</span>
         </Button>
-        <Button variant="contained" color="primary" onClick={onRefresh}>
+        <Button variant="contained" color="primary" onClick={(e: any) => onRefresh}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
       </Toolbar>
       <Table>
         <TableHead>
           <TableRow>
+            <TablePagination
+              rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
+              colSpan={9}
+              count={phrasesUnitService.textbookPhraseCount}
+              rowsPerPage={rows}
+              page={page - 1}
+              SelectProps={{
+                native: true,
+              }}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleRowsPerPageChange}
+            />
+          </TableRow>
+          <TableRow>
             <TableCell>ID</TableCell>
+            <TableCell>TEXTBOOKNAME</TableCell>
             <TableCell>UNIT</TableCell>
             <TableCell>PART</TableCell>
             <TableCell>SEQNUM</TableCell>
@@ -124,9 +158,10 @@ export default function PhrasesUnit2() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {phrasesUnitService.unitPhrases.map(row => (
+          {phrasesUnitService.textbookPhrases.map(row => (
             <TableRow key={row.ID}>
               <TableCell>{row.ID}</TableCell>
+              <TableCell>{row.TEXTBOOKNAME}</TableCell>
               <TableCell>{row.UNITSTR}</TableCell>
               <TableCell>{row.PARTSTR}</TableCell>
               <TableCell>{row.SEQNUM}</TableCell>
@@ -166,8 +201,24 @@ export default function PhrasesUnit2() {
             </TableRow>
           ))}
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
+              colSpan={9}
+              count={phrasesUnitService.textbookPhraseCount}
+              rowsPerPage={rows}
+              page={page - 1}
+              SelectProps={{
+                native: true,
+              }}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleRowsPerPageChange}
+            />
+          </TableRow>
+        </TableFooter>
       </Table>
-      {showDetail && <PhrasesUnitDetail2 id={detailId} isDialogOpened={showDetail} handleCloseDialog={() => setShowDetail(false)} />}
+      {showDetail && <PhrasesTextbookDetail2 id={detailId} isDialogOpened={showDetail} handleCloseDialog={() => setShowDetail(false)} />}
     </div>
   );
 }

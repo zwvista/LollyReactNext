@@ -1,5 +1,5 @@
 import * as React from 'react';
-import '../misc/Common.css'
+// import '../misc/Common.css'
 import { container } from "tsyringe";
 import { SettingsService } from '@/view-models/misc/settings.service';
 import { PatternsService } from '@/view-models/wpp/patterns.service';

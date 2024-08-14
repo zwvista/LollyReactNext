@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { container } from "tsyringe";
-import '../misc/Common.css'
+// import '../misc/Common.css'
 import { SettingsService } from '@/view-models/misc/settings.service';
 import {
   Button,
@@ -14,22 +14,22 @@ import {
   Toolbar,
   Tooltip
 } from '@mui/material';
-import { PhrasesUnitService } from '@/view-models/wpp/phrases-unit.service';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faEdit, faPlus, faSync, faTrash, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { PhrasesLangService } from '@/view-models/wpp/phrases-lang.service';
 import { googleString } from '@/common/common';
-import { MUnitPhrase } from '@/models/wpp/unit-phrase';
 import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
-import PhrasesTextbookDetail2 from "@/components/PhrasesTextbookDetail2";
+import { MLangPhrase } from '@/models/wpp/lang-phrase';
+import PhrasesLangDetail2 from "@/components/PhrasesLangDetail2";
 
-export default function PhrasesTextbook2() {
+export default function PhrasesLang2() {
   const appService = container.resolve(AppService);
-  const phrasesUnitService = container.resolve(PhrasesUnitService);
+  const phrasesLangService = container.resolve(PhrasesLangService);
   const settingsService = container.resolve(SettingsService);
   // const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
@@ -39,7 +39,6 @@ export default function PhrasesTextbook2() {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState('');
   const [filterType, setFilterType] = useState(0);
-  const [textbookFilter, setTextbookFilter] = useState(0);
   const [refreshCount, onRefresh] = useReducer(x => x + 1, 0);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
@@ -68,13 +67,8 @@ export default function PhrasesTextbook2() {
     onRefresh();
   };
 
-  const onTextbookFilterChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
-    setTextbookFilter(Number(e.target.value));
-    onRefresh();
-  };
-
-  const deletePhrase = (item: MUnitPhrase) => {
-    phrasesUnitService.delete(item);
+  const deletePhrase = (item: MLangPhrase) => {
+    phrasesLangService.delete(item);
   };
 
   const googlePhrase = (phrase: string) => {
@@ -96,7 +90,7 @@ export default function PhrasesTextbook2() {
 
   useEffect(() => {
     (async () => {
-      await phrasesUnitService.getDataInLang(page, rows, filter, filterType, textbookFilter);
+      await phrasesLangService.getData(page, rows, filter, filterType);
       forceUpdate();
     })();
   }, [refreshCount]);
@@ -114,14 +108,6 @@ export default function PhrasesTextbook2() {
         </Select>
         <TextField label="Filter" value={filter}
                    onChange={onFilterChange} onKeyPress={onFilterKeyPress}/>
-        <Select
-          value={textbookFilter}
-          onChange={onTextbookFilterChange}
-        >
-          {settingsService.textbookFilters.map(row =>
-            <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
-          )}
-        </Select>
         <Button variant="contained" color="primary" onClick={() => showDetailDialog(0)}>
           <span><FontAwesomeIcon icon={faPlus} />Add</span>
         </Button>
@@ -134,8 +120,8 @@ export default function PhrasesTextbook2() {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
-              colSpan={9}
-              count={phrasesUnitService.textbookPhraseCount}
+              colSpan={4}
+              count={phrasesLangService.langPhraseCount}
               rowsPerPage={rows}
               page={page - 1}
               SelectProps={{
@@ -147,25 +133,15 @@ export default function PhrasesTextbook2() {
           </TableRow>
           <TableRow>
             <TableCell>ID</TableCell>
-            <TableCell>TEXTBOOKNAME</TableCell>
-            <TableCell>UNIT</TableCell>
-            <TableCell>PART</TableCell>
-            <TableCell>SEQNUM</TableCell>
-            <TableCell>PHRASEID</TableCell>
             <TableCell>PHRASE</TableCell>
             <TableCell>TRANSLATION</TableCell>
             <TableCell>ACTIONS</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {phrasesUnitService.textbookPhrases.map(row => (
+          {phrasesLangService.langPhrases.map(row => (
             <TableRow key={row.ID}>
               <TableCell>{row.ID}</TableCell>
-              <TableCell>{row.TEXTBOOKNAME}</TableCell>
-              <TableCell>{row.UNITSTR}</TableCell>
-              <TableCell>{row.PARTSTR}</TableCell>
-              <TableCell>{row.SEQNUM}</TableCell>
-              <TableCell>{row.PHRASEID}</TableCell>
               <TableCell>{row.PHRASE}</TableCell>
               <TableCell>{row.TRANSLATION}</TableCell>
               <TableCell>
@@ -205,8 +181,8 @@ export default function PhrasesTextbook2() {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
-              colSpan={9}
-              count={phrasesUnitService.textbookPhraseCount}
+              colSpan={4}
+              count={phrasesLangService.langPhraseCount}
               rowsPerPage={rows}
               page={page - 1}
               SelectProps={{
@@ -218,7 +194,7 @@ export default function PhrasesTextbook2() {
           </TableRow>
         </TableFooter>
       </Table>
-      {showDetail && <PhrasesTextbookDetail2 id={detailId} isDialogOpened={showDetail} handleCloseDialog={() => setShowDetail(false)} />}
+      {showDetail && <PhrasesLangDetail2 id={detailId} isDialogOpened={showDetail} handleCloseDialog={() => setShowDetail(false)} />}
     </div>
   );
 }
