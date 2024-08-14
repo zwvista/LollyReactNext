@@ -1,5 +1,7 @@
+'use client'
+
 import * as React from 'react';
-import './App.css';
+// import './App.css';
 
 import { AppBar, Tab, Tabs } from '@mui/material';
 
@@ -8,7 +10,7 @@ import { container } from "tsyringe";
 import { AppService } from '@/view-models/misc/app.service';
 import Link from "next/link";
 
-import "font-awesome/css/font-awesome.min.css";
+// import "font-awesome/css/font-awesome.min.css";
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { far } from "@fortawesome/free-regular-svg-icons";

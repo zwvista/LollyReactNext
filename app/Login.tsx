@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './Common.css'
+// import './Common.css'
 import { container } from "tsyringe";
 import { GlobalVars } from '@/common/common';
 import { LoginService } from '@/view-models/misc/login.service';
