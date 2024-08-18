@@ -1,3 +1,6 @@
+'use client'
+
+import 'reflect-metadata';
 import * as React from 'react';
 import { WordsUnitService } from '@/view-models/wpp/words-unit.service';
 import { container } from "tsyringe";
@@ -27,7 +30,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { MUnitWord } from '@/models/wpp/unit-word';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
-import { ChangeEvent, ReactNode, SyntheticEvent, useEffect, useReducer, useState } from 'react';
+import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import WordsUnitDetail2 from "@/components/WordsUnitDetail2";
@@ -150,7 +153,7 @@ export default function WordsUnit2() {
         <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning">
           Retrieve Notes If Empty
         </Button>
-        <Button variant="contained" color="primary" onClick={/*() => navigate('/words-dict/unit/0')*/}>
+        <Button variant="contained" color="primary">
           <span><FontAwesomeIcon icon={faBook} />Dictionary</span>
         </Button>
       </Toolbar>
