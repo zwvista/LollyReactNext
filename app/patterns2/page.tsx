@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { container } from "tsyringe";
-// import '../misc/Common.css'
-import { SettingsService } from '@/view-models/misc/settings.service';
+import '../misc/Common.css'
+import { SettingsService } from '../../view-models/misc/settings.service';
 import {
   Button,
   Fab, MenuItem, Select, SelectChangeEvent,
@@ -18,19 +18,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faEdit, faPlus, faSync, faTrash, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { googleString } from '@/common/common';
+import { googleString } from '../../common/common';
 import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
-import { AppService } from '@/view-models/misc/app.service';
-import { PatternsService } from '@/view-models/wpp/patterns.service';
-import PatternsDetail2 from "@/components/PatternsDetail2";
+import { AppService } from '../../view-models/misc/app.service';
+import { PatternsService } from '../../view-models/wpp/patterns.service';
+import { useNavigate } from "react-router-dom";
+import PatternsDetail2 from "./PatternsDetail2";
 
 export default function Patterns2() {
   const appService = container.resolve(AppService);
   const patternsService = container.resolve(PatternsService);
   const settingsService = container.resolve(SettingsService);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
@@ -66,8 +67,8 @@ export default function Patterns2() {
     onRefresh();
   };
 
-  const deletePattern = (id: number) => {
-    patternsService.delete(id);
+  const deletePattern = async (id: number) => {
+    await patternsService.delete(id);
   };
 
   const googlePattern = (pattern: string) => {
@@ -133,8 +134,9 @@ export default function Patterns2() {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell>PATTERN</TableCell>
-            <TableCell>NOTE</TableCell>
             <TableCell>TAGS</TableCell>
+            <TableCell>TITLE</TableCell>
+            <TableCell>URL</TableCell>
             <TableCell>ACTIONS</TableCell>
           </TableRow>
         </TableHead>
@@ -143,8 +145,9 @@ export default function Patterns2() {
             <TableRow key={row.ID}>
               <TableCell>{row.ID}</TableCell>
               <TableCell>{row.PATTERN}</TableCell>
-              <TableCell>{row.NOTE}</TableCell>
               <TableCell>{row.TAGS}</TableCell>
+              <TableCell>{row.TITLE}</TableCell>
+              <TableCell>{row.URL}</TableCell>
               <TableCell>
                 <Tooltip title="Delete">
                   <Fab size="small" color="secondary" onClick={() => deletePattern(row.ID)}>
