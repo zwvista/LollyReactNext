@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react';
 import { WordsUnitService } from '@/view-models/wpp/words-unit.service';
 import { container } from "tsyringe";
@@ -34,12 +36,13 @@ import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import WordsTextbookDetail2 from "@/components/WordsTextbookDetail2";
+import { useRouter } from "next/navigation";
 
 export default function WordsTextbook2() {
   const appService = container.resolve(AppService);
   const wordsUnitService = container.resolve(WordsUnitService);
   const settingsService = container.resolve(SettingsService);
-  // const navigate = useNavigate();
+  const router = useRouter()
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
@@ -81,13 +84,16 @@ export default function WordsTextbook2() {
     onRefresh();
   };
 
-  const deleteWord = (item: MUnitWord) => {
-    wordsUnitService.delete(item);
+  const deleteWord = async (item: MUnitWord) => {
+    await wordsUnitService.delete(item);
   };
 
-  const getNote = async (index: number) => {
-    console.log(index);
-    await wordsUnitService.getNote(index);
+  const getNote = async (item: MUnitWord) => {
+    await wordsUnitService.getNote(item);
+  };
+
+  const clearNote = async (item: MUnitWord) => {
+    await wordsUnitService.clearNote(item);
   };
 
   // https://stackoverflow.com/questions/42775017/angular-2-redirect-to-an-external-url-and-open-in-a-new-tab
@@ -97,7 +103,7 @@ export default function WordsTextbook2() {
 
   const dictWord = (item: MUnitWord) => {
     const index = wordsUnitService.textbookWords.indexOf(item);
-    // navigate('/words-dict/textbook/' + index);
+    router.push('/words-dict/textbook/' + index);
   };
 
   const showDetailDialog = (id: number) => {
@@ -226,8 +232,12 @@ export default function WordsTextbook2() {
                   </Fab>
                 </Tooltip>
                 <Button variant="contained" color="warning" hidden={!settingsService.selectedDictNote}
-                        onClick={() => getNote(row.ID)}>
-                  Retrieve Note
+                        onClick={() => getNote(row)}>
+                  Get Note
+                </Button>
+                <Button variant="contained" color="warning" hidden={!settingsService.selectedDictNote}
+                        onClick={() => clearNote(row)}>
+                  Clear Note
                 </Button>
               </TableCell>
             </TableRow>

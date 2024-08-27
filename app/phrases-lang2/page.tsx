@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react';
 import { container } from "tsyringe";
 // import '../misc/Common.css'
@@ -26,12 +28,13 @@ import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import { MLangPhrase } from '@/models/wpp/lang-phrase';
 import PhrasesLangDetail2 from "@/components/PhrasesLangDetail2";
+import { useRouter } from "next/navigation";
 
 export default function PhrasesLang2() {
   const appService = container.resolve(AppService);
   const phrasesLangService = container.resolve(PhrasesLangService);
   const settingsService = container.resolve(SettingsService);
-  // const navigate = useNavigate();
+  const router = useRouter()
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 

@@ -34,12 +34,13 @@ import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import WordsUnitDetail2 from "@/components/WordsUnitDetail2";
+import { useRouter } from "next/navigation";
 
 export default function WordsUnit2() {
   const appService = container.resolve(AppService);
   const wordsUnitService = container.resolve(WordsUnitService);
   const settingsService = container.resolve(SettingsService);
-  // const navigate = useNavigate();
+  const router = useRouter()
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
@@ -78,13 +79,17 @@ export default function WordsUnit2() {
     onRefresh();
   };
 
-  const deleteWord = (item: MUnitWord) => {
-    wordsUnitService.delete(item);
+  const deleteWord = async (item: MUnitWord) => {
+    await wordsUnitService.delete(item);
   };
 
   const getNote = async (item: MUnitWord) => {
-    const index = wordsUnitService.unitWords.indexOf(item);
-    await wordsUnitService.getNote(index);
+    await wordsUnitService.getNote(item);
+    onRefresh();
+  };
+
+  const clearNote = async (item: MUnitWord) => {
+    await wordsUnitService.clearNote(item);
     onRefresh();
   };
 
@@ -94,11 +99,15 @@ export default function WordsUnit2() {
 
   const dictWord = (item: MUnitWord) => {
     const index = wordsUnitService.unitWords.indexOf(item);
-    // navigate('/words-dict/unit/' + index);
+    router.push('/words-dict/unit/' + index);
   };
 
   const getNotes = (ifEmpty: boolean) => {
     wordsUnitService.getNotes(ifEmpty, () => {}, () => {});
+  };
+
+  const clearNotes = (ifEmpty: boolean) => {
+    wordsUnitService.clearNotes(ifEmpty, () => {}, () => {});
   };
 
   const showDetailDialog = (id: number) => {
@@ -148,13 +157,19 @@ export default function WordsUnit2() {
         <Button variant="contained" color="primary" onClick={onRefresh}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
-        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning">
-          Retrieve All Notes
+        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => getNotes(false)}>
+          Get All Notes
         </Button>
-        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning">
-          Retrieve Notes If Empty
+        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => getNotes(true)}>
+          Get Notes If Empty
         </Button>
-        <Button variant="contained" color="primary">
+        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => clearNotes(false)}>
+          Clear All Notes
+        </Button>
+        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => clearNotes(true)}>
+          Clear Notes If Empty
+        </Button>
+        <Button variant="contained" color="primary" onClick={() => router.push('/words-dict/unit/0')}>
           <span><FontAwesomeIcon icon={faBook} />Dictionary</span>
         </Button>
       </Toolbar>
@@ -219,7 +234,11 @@ export default function WordsUnit2() {
                 </Tooltip>
                 <Button variant="contained" color="warning" hidden={!settingsService.selectedDictNote}
                         onClick={() => getNote(row)}>
-                  Retrieve Note
+                  Get Note
+                </Button>
+                <Button variant="contained" color="warning" hidden={!settingsService.selectedDictNote}
+                        onClick={() => clearNote(row)}>
+                  Clear Note
                 </Button>
               </TableCell>
             </TableRow>

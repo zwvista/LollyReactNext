@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react';
 import { container } from "tsyringe";
 // import '../misc/Common.css'
@@ -26,12 +28,13 @@ import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import PhrasesTextbookDetail2 from "@/components/PhrasesTextbookDetail2";
+import { useRouter } from "next/navigation";
 
 export default function PhrasesTextbook2() {
   const appService = container.resolve(AppService);
   const phrasesUnitService = container.resolve(PhrasesUnitService);
   const settingsService = container.resolve(SettingsService);
-  // const navigate = useNavigate();
+  const router = useRouter()
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
@@ -87,6 +90,7 @@ export default function PhrasesTextbook2() {
   };
 
   useEffect(() => {
+    if (!appService.isInitialized) return;
     (async () => {
       await appService.getData();
       setRows(settingsService.USROWSPERPAGE);

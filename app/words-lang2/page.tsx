@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react';
 import { container } from "tsyringe";
 // import '../misc/Common.css'
@@ -35,12 +37,13 @@ import { MLangWord } from '@/models/wpp/lang-word';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import WordsLangDetail2 from "@/components/WordsLangDetail2";
+import { useRouter } from "next/navigation";
 
 export default function WordsLang2() {
   const appService = container.resolve(AppService);
   const wordsLangService = container.resolve(WordsLangService);
   const settingsService = container.resolve(SettingsService);
-  // const navigate = useNavigate();
+  const router = useRouter()
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
@@ -76,13 +79,16 @@ export default function WordsLang2() {
     onRefresh();
   };
 
-  const deleteWord = (item: MLangWord) => {
-    wordsLangService.delete(item);
+  const deleteWord = async (item: MLangWord) => {
+    await wordsLangService.delete(item);
   };
 
-  const getNote = async (index: number) => {
-    console.log(index);
-    await wordsLangService.getNote(index);
+  const getNote = async (item: MLangWord) => {
+    await wordsLangService.getNote(item);
+  };
+
+  const clearNote = async (item: MLangWord) => {
+    await wordsLangService.clearNote(item);
   };
 
   // https://stackoverflow.com/questions/42775017/angular-2-redirect-to-an-external-url-and-open-in-a-new-tab
@@ -92,7 +98,7 @@ export default function WordsLang2() {
 
   const dictWord = (item: MLangWord) => {
     const index = wordsLangService.langWords.indexOf(item);
-    navigate('/words-dict/lang/' + index);
+    router.push('/words-dict/lang/' + index);
   };
 
   const showDetailDialog = (id: number) => {
@@ -135,7 +141,7 @@ export default function WordsLang2() {
         <Button variant="contained" color="primary" onClick={(e: any) => onRefresh}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
-        <Button variant="contained" color="primary" onClick={/*() => navigate('/words-dict/lang/0')*/}>
+        <Button variant="contained" color="primary" onClick={() => router.push('/words-dict/lang/0')}>
           <span><FontAwesomeIcon icon={faBook} />Dictionary</span>
         </Button>
       </Toolbar>
@@ -205,8 +211,12 @@ export default function WordsLang2() {
                   </Fab>
                 </Tooltip>
                 <Button variant="contained" color="warning" hidden={!settingsService.selectedDictNote}
-                        onClick={() => getNote(row.ID)}>
-                  Retrieve Note
+                        onClick={() => getNote(row)}>
+                  Get Note
+                </Button>
+                <Button variant="contained" color="warning" hidden={!settingsService.selectedDictNote}
+                        onClick={() => clearNote(row)}>
+                  Clear Note
                 </Button>
               </TableCell>
             </TableRow>

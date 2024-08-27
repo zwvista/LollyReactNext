@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react';
 import { container } from "tsyringe";
 // import '../misc/Common.css'
@@ -35,12 +37,13 @@ import { KeyboardEvent } from 'react';
 import { ReactNode } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import PhrasesUnitDetail2 from "@/components/PhrasesUnitDetail2";
+import { useRouter } from "next/navigation";
 
 export default function PhrasesUnit2() {
   const appService = container.resolve(AppService);
   const phrasesUnitService = container.resolve(PhrasesUnitService);
   const settingsService = container.resolve(SettingsService);
-  // const navigate = useNavigate();
+  const router = useRouter()
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 

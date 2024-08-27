@@ -57,8 +57,7 @@ export default function App() {
             </Link>
           )}
         </Tabs>
-      </AppBar>}
-      <Outlet/>
+      </AppBar>
     </div>
   );
 }

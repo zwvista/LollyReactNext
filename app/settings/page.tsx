@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react';
 import { container } from "tsyringe";
 import { SettingsService } from '@/view-models/misc/settings.service';
