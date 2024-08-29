@@ -35,6 +35,8 @@ import { KeyboardEvent } from 'react';
 import { AppService } from '@/view-models/misc/app.service';
 import WordsUnitDetail2 from "@/components/WordsUnitDetail2";
 import { useRouter } from "next/navigation";
+import { useCookies } from "next-client-cookies";
+import { GlobalVars } from "@/common/common";
 
 export default function WordsUnit2() {
   const appService = container.resolve(AppService);
@@ -43,6 +45,7 @@ export default function WordsUnit2() {
   const router = useRouter()
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
+  const cookies = useCookies();
 
   const [newWord, setNewWord] = useState('');
   const [filter, setFilter] = useState('');
@@ -117,6 +120,7 @@ export default function WordsUnit2() {
 
   useEffect(() => {
     (async () => {
+      GlobalVars.userid = cookies.get('userid')!;
       await appService.getData();
       onRefresh();
     })();

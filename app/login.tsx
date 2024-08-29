@@ -2,16 +2,14 @@
 
 import 'reflect-metadata';
 import * as React from 'react';
-// import './Common.css'
+// import '../misc/Common.css'
 import { container } from "tsyringe";
 import { GlobalVars } from '@/common/common';
 import { LoginService } from '@/view-models/misc/login.service';
 import { ChangeEvent, useReducer } from "react";
 import { Button, TextField } from "@mui/material";
-import { useCookies } from 'next-client-cookies';
 
 export default function Login() {
-  const cookies = useCookies();
   const loginService = container.resolve(LoginService);
   const [, forceUpdate] = useReducer(x => x + 1, 0, x => 0);
 
@@ -28,7 +26,7 @@ export default function Login() {
   const login = async () => {
     const userid = await loginService.login();
     if (userid) {
-      cookies.set('userid', userid);
+      localStorage.setItem('userid', userid);
       GlobalVars.userid = userid;
       window.location.reload();
     }
