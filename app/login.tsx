@@ -4,8 +4,8 @@ import 'reflect-metadata';
 import * as React from 'react';
 // import '../misc/Common.css'
 import { container } from "tsyringe";
-import { GlobalVars } from '@/common/common';
-import { LoginService } from '@/view-models/misc/login.service';
+import { GlobalVars } from '@/shared/common/common';
+import { LoginService } from '@/shared/view-models/misc/login.service';
 import { ChangeEvent, useReducer } from "react";
 import { Button, TextField } from "@mui/material";
 
