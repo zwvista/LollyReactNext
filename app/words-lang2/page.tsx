@@ -19,8 +19,6 @@ import {
 import { WordsLangService } from '@/shared/view-models/wpp/words-lang.service';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faArrowDown,
-  faArrowUp,
   faBook,
   faCopy,
   faEdit,
@@ -47,26 +45,23 @@ export default function WordsLang2() {
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
-  const [rows, setRows] = useState(0);
-  const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState('');
-  const [filterType, setFilterType] = useState(0);
   const [reloadCount, onReload] = useReducer(x => x + 1, 0);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const handleChangePage = (event: any, page: any) => {
-    setPage(page + 1);
+    wordsLangService.page = page + 1;
     onReload();
   };
 
   const handleRowsPerPageChange = (event: any) => {
-    setPage(1);
-    setRows(event.target.value);
+    wordsLangService.page = 1;
+    wordsLangService.rows = event.target.value;
     onReload();
   };
 
   const onFilterChange = (e: SyntheticEvent) => {
-    setFilter((e.nativeEvent.target as HTMLInputElement).value);
+    wordsLangService.filter = (e.nativeEvent.target as HTMLInputElement).value;
+    onReload();
   };
 
   const onFilterKeyPress = (e: KeyboardEvent) => {
@@ -75,7 +70,7 @@ export default function WordsLang2() {
   };
 
   const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
-    setFilterType(Number(e.target.value));
+    wordsLangService.filterType = Number(e.target.value);
     onReload();
   };
 
@@ -109,7 +104,7 @@ export default function WordsLang2() {
   useEffect(() => {
     (async () => {
       await appService.getData();
-      setRows(settingsService.USROWSPERPAGE);
+      wordsLangService.rows = settingsService.USROWSPERPAGE;
       onReload();
     })();
   }, []);
@@ -117,7 +112,7 @@ export default function WordsLang2() {
   useEffect(() => {
     if (!appService.isInitialized) return;
     (async () => {
-      await wordsLangService.getData(page, rows, filter, filterType);
+      await wordsLangService.getData();
       forceUpdate();
     })();
   }, [reloadCount]);
@@ -126,19 +121,19 @@ export default function WordsLang2() {
     <div>
       <Toolbar>
         <Select
-          value={filterType}
+          value={wordsLangService.filterType}
           onChange={onFilterTypeChange}
         >
           {settingsService.wordFilterTypes.map(row =>
             <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
           )}
         </Select>
-        <TextField label="Filter" value={filter}
+        <TextField label="Filter" value={wordsLangService.filter}
                    onChange={onFilterChange} onKeyPress={onFilterKeyPress}/>
         <Button variant="contained" color="primary" onClick={() => showDetailDialog(0)}>
           <span><FontAwesomeIcon icon={faPlus} />Add</span>
         </Button>
-        <Button variant="contained" color="primary" onClick={(e: any) => onReload}>
+        <Button variant="contained" color="primary" onClick={(e: any) => onReload()}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
         <Button variant="contained" color="primary" onClick={() => router.push('/words-dict/lang/0')}>
@@ -152,8 +147,8 @@ export default function WordsLang2() {
               rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
               colSpan={5}
               count={wordsLangService.langWordsCount}
-              rowsPerPage={rows}
-              page={page - 1}
+              rowsPerPage={wordsLangService.rows}
+              page={wordsLangService.page - 1}
               SelectProps={{
                 native: true,
               }}
@@ -228,8 +223,8 @@ export default function WordsLang2() {
               rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
               colSpan={5}
               count={wordsLangService.langWordsCount}
-              rowsPerPage={rows}
-              page={page - 1}
+              rowsPerPage={wordsLangService.rows}
+              page={wordsLangService.page - 1}
               SelectProps={{
                 native: true,
               }}

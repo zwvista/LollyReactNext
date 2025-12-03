@@ -7,8 +7,8 @@ import { container } from "tsyringe";
 // import '../misc/Common.css'
 import { SettingsService } from '@/shared/view-models/misc/settings.service';
 import {
-  Button,
-  Fab, MenuItem, Select, SelectChangeEvent,
+  Button, Checkbox,
+  Fab, FormControlLabel, MenuItem, Select, SelectChangeEvent,
   Table,
   TableBody,
   TableCell,
@@ -47,29 +47,23 @@ export default function WordsUnit2() {
   const [detailId, setDetailId] = useState(0);
   const cookies = useCookies();
 
-  const [newWord, setNewWord] = useState('');
-  const [filter, setFilter] = useState('');
-  const [filterType, setFilterType] = useState(0);
   const [reloadCount, onReload] = useReducer(x => x + 1, 0);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const onNewWordChange = (e: SyntheticEvent) => {
-    setNewWord((e.nativeEvent.target as HTMLInputElement).value);
+    wordsUnitService.newWord = (e.nativeEvent.target as HTMLInputElement).value;
+    onReload();
   };
 
   const onNewWordKeyPress = async (e: KeyboardEvent) => {
-    if (e.key !== 'Enter' || !newWord) return;
-    const o = wordsUnitService.newUnitWord();
-    o.WORD = settingsService.autoCorrectInput(newWord);
-    setNewWord('');
-    const id = await wordsUnitService.create(o);
-    o.ID = id as number;
-    wordsUnitService.unitWords.push(o);
+    if (e.key !== 'Enter' || !wordsUnitService.newWord) return;
+    await wordsUnitService.createWithNewWord();
     onReload();
   };
 
   const onFilterChange = (e: SyntheticEvent) => {
-    setFilter((e.nativeEvent.target as HTMLInputElement).value);
+    wordsUnitService.filter = (e.nativeEvent.target as HTMLInputElement).value;
+    onReload();
   };
 
   const onFilterKeyPress = (e: KeyboardEvent) => {
@@ -78,13 +72,17 @@ export default function WordsUnit2() {
   };
 
   const onFilterTypeChange = (e: SelectChangeEvent<number>) => {
-    setFilterType(e.target.value as number);
+    wordsUnitService.filterType = e.target.value as number;
     onReload();
   };
 
   const deleteWord = async (item: MUnitWord) => {
     await wordsUnitService.delete(item);
   };
+
+  const onIfEmptyChange = (e: any) => {
+    wordsUnitService.ifEmpty = e.checked;
+  }
 
   const getNote = async (item: MUnitWord) => {
     await wordsUnitService.getNote(item);
@@ -105,12 +103,12 @@ export default function WordsUnit2() {
     router.push('/words-dict/unit/' + index);
   };
 
-  const getNotes = (ifEmpty: boolean) => {
-    wordsUnitService.getNotes(ifEmpty, () => {}, () => {});
+  const getNotes = () => {
+    wordsUnitService.getNotes(() => {}, () => {});
   };
 
-  const clearNotes = (ifEmpty: boolean) => {
-    wordsUnitService.clearNotes(ifEmpty, () => {}, () => {});
+  const clearNotes = () => {
+    wordsUnitService.clearNotes(() => {}, () => {});
   };
 
   const showDetailDialog = (id: number) => {
@@ -129,7 +127,7 @@ export default function WordsUnit2() {
   useEffect(() => {
     if (!appService.isInitialized) return;
     (async () => {
-      await wordsUnitService.getDataInTextbook(filter, filterType);
+      await wordsUnitService.getDataInTextbook();
       forceUpdate();
     })();
   }, [reloadCount]);
@@ -137,23 +135,23 @@ export default function WordsUnit2() {
   return (
     <div>
       <Toolbar>
-        <TextField label="New Word" value={newWord}
+        <TextField label="New Word" value={wordsUnitService.newWord}
                    onChange={onNewWordChange} onKeyPress={onNewWordKeyPress}/>
         <Tooltip title="Speak">
           <Fab size="small" color="primary" hidden={!settingsService.selectedVoice}
-               onClick={() => settingsService.speak(newWord)}>
+               onClick={() => settingsService.speak(wordsUnitService.newWord)}>
             <FontAwesomeIcon icon={faVolumeUp} />
           </Fab>
         </Tooltip>
         <Select
-          value={filterType}
+          value={wordsUnitService.filterType}
           onChange={onFilterTypeChange}
         >
           {settingsService.wordFilterTypes.map(row =>
             <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
           )}
         </Select>
-        <TextField label="Filter" value={filter}
+        <TextField label="Filter" value={wordsUnitService.filter}
                    onChange={onFilterChange} onKeyPress={onFilterKeyPress}/>
         <Button variant="contained" color="primary" onClick={() => showDetailDialog(0)}>
           <span><FontAwesomeIcon icon={faPlus} />Add</span>
@@ -161,17 +159,12 @@ export default function WordsUnit2() {
         <Button variant="contained" color="primary" onClick={onReload}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
-        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => getNotes(false)}>
-          Get All Notes
+        <FormControlLabel control={<Checkbox checked={wordsUnitService.ifEmpty} onChange={onIfEmptyChange} />} label="If Empty" />
+        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => getNotes()}>
+          Get Notes
         </Button>
-        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => getNotes(true)}>
-          Get Notes If Empty
-        </Button>
-        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => clearNotes(false)}>
-          Clear All Notes
-        </Button>
-        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => clearNotes(true)}>
-          Clear Notes If Empty
+        <Button hidden={!settingsService.selectedDictNote} variant="contained" color="warning" onClick={() => clearNotes()}>
+          Clear Notes
         </Button>
         <Button variant="contained" color="primary" onClick={() => router.push('/words-dict/unit/0')}>
           <span><FontAwesomeIcon icon={faBook} />Dictionary</span>

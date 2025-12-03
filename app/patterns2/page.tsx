@@ -27,36 +27,31 @@ import { ReactNode } from 'react';
 import { AppService } from '@/shared/view-models/misc/app.service';
 import { PatternsService } from '@/shared/view-models/wpp/patterns.service';
 import PatternsDetail2 from "@/components/PatternsDetail2";
-import { useRouter } from "next/navigation";
 
 export default function Patterns2() {
   const appService = container.resolve(AppService);
   const patternsService = container.resolve(PatternsService);
   const settingsService = container.resolve(SettingsService);
-  const router = useRouter()
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
-  const [rows, setRows] = useState(0);
-  const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState('');
-  const [filterType, setFilterType] = useState(0);
   const [reloadCount, onReload] = useReducer(x => x + 1, 0);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const handleChangePage = (event: any, page: any) => {
-    setPage(page + 1);
+    patternsService.page = page + 1;
     onReload();
   };
 
   const handleRowsPerPageChange = (event: any) => {
-    setPage(1);
-    setRows(event.target.value);
+    patternsService.page = 1;
+    patternsService.rows = event.target.value;
     onReload();
   };
 
   const onFilterChange = (e: SyntheticEvent) => {
-    setFilter((e.nativeEvent.target as HTMLInputElement).value);
+    patternsService.filter = (e.nativeEvent.target as HTMLInputElement).value;
+    onReload();
   };
 
   const onFilterKeyPress = (e: KeyboardEvent) => {
@@ -65,7 +60,7 @@ export default function Patterns2() {
   };
 
   const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
-    setFilterType(Number(e.target.value));
+    patternsService.filterType = Number(e.target.value);
     onReload();
   };
 
@@ -85,7 +80,7 @@ export default function Patterns2() {
   useEffect(() => {
     (async () => {
       await appService.getData();
-      setRows(settingsService.USROWSPERPAGE);
+      patternsService.rows = settingsService.USROWSPERPAGE;
       onReload();
     })();
   }, []);
@@ -93,7 +88,7 @@ export default function Patterns2() {
   useEffect(() => {
     if (!appService.isInitialized) return;
     (async () => {
-      await patternsService.getData(page, rows, filter, filterType);
+      await patternsService.getData();
       forceUpdate();
     })();
   }, [reloadCount]);
@@ -102,19 +97,19 @@ export default function Patterns2() {
     <div>
       <Toolbar>
         <Select
-          value={filterType}
+          value={patternsService.filterType}
           onChange={onFilterTypeChange}
         >
           {settingsService.patternFilterTypes.map(row =>
             <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
           )}
         </Select>
-        <TextField label="Filter" value={filter}
+        <TextField label="Filter" value={patternsService.filter}
                    onChange={onFilterChange} onKeyPress={onFilterKeyPress}/>
         <Button variant="contained" color="primary" onClick={() => showDetailDialog(0)}>
           <span><FontAwesomeIcon icon={faPlus} />Add</span>
         </Button>
-        <Button variant="contained" color="primary" onClick={(e: any) => onReload}>
+        <Button variant="contained" color="primary" onClick={(e: any) => onReload()}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
       </Toolbar>
@@ -125,8 +120,8 @@ export default function Patterns2() {
               rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
               colSpan={4}
               count={patternsService.patternCount}
-              rowsPerPage={rows}
-              page={page - 1}
+              rowsPerPage={patternsService.rows}
+              page={patternsService.page - 1}
               SelectProps={{
                 native: true,
               }}
@@ -190,8 +185,8 @@ export default function Patterns2() {
               rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
               colSpan={4}
               count={patternsService.patternCount}
-              rowsPerPage={rows}
-              page={page - 1}
+              rowsPerPage={patternsService.rows}
+              page={patternsService.page - 1}
               SelectProps={{
                 native: true,
               }}

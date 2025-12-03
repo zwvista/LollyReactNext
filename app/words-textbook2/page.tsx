@@ -19,12 +19,10 @@ import {
 } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faArrowDown,
-  faArrowUp,
   faBook,
   faCopy,
   faEdit,
-  faPlus, faSync,
+  faSync,
   faTrash,
   faVolumeUp
 } from '@fortawesome/free-solid-svg-icons';
@@ -46,27 +44,23 @@ export default function WordsTextbook2() {
   const [showDetail, setShowDetail] = useState(false);
   const [detailId, setDetailId] = useState(0);
 
-  const [rows, setRows] = useState(0);
-  const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState('');
-  const [filterType, setFilterType] = useState(0);
-  const [textbookFilter, setTextbookFilter] = useState(0);
   const [reloadCount, onReload] = useReducer(x => x + 1, 0);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const handleChangePage = (event: any, page: any) => {
-    setPage(page + 1);
+    wordsUnitService.page = page + 1;
     onReload();
   };
 
   const handleRowsPerPageChange = (event: any) => {
-    setPage(1);
-    setRows(event.target.value);
+    wordsUnitService.page = 1;
+    wordsUnitService.rows = event.target.value;
     onReload();
   };
 
   const onFilterChange = (e: SyntheticEvent) => {
-    setFilter((e.nativeEvent.target as HTMLInputElement).value);
+    wordsUnitService.filter = (e.nativeEvent.target as HTMLInputElement).value;
+    onReload();
   };
 
   const onFilterKeyPress = (e: KeyboardEvent) => {
@@ -75,12 +69,12 @@ export default function WordsTextbook2() {
   };
 
   const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
-    setFilterType(Number(e.target.value));
+    wordsUnitService.filterType = Number(e.target.value);
     onReload();
   };
 
   const onTextbookFilterChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
-    setTextbookFilter(Number(e.target.value));
+    wordsUnitService.textbookFilter = Number(e.target.value);
     onReload();
   };
 
@@ -114,7 +108,7 @@ export default function WordsTextbook2() {
   useEffect(() => {
     (async () => {
       await appService.getData();
-      setRows(settingsService.USROWSPERPAGE);
+      wordsUnitService.rows = settingsService.USROWSPERPAGE;
       onReload();
     })();
   }, []);
@@ -123,7 +117,7 @@ export default function WordsTextbook2() {
     if (!appService.isInitialized) return;
     (async () => {
       // https://stackoverflow.com/questions/4228356/integer-division-with-remainder-in-javascript
-      await wordsUnitService.getDataInLang(page, rows, filter, filterType, textbookFilter);
+      await wordsUnitService.getDataInLang();
       forceUpdate();
     })();
   }, [reloadCount]);
@@ -132,24 +126,24 @@ export default function WordsTextbook2() {
     <div>
       <Toolbar>
         <Select
-          value={filterType}
+          value={wordsUnitService.filterType}
           onChange={onFilterTypeChange}
         >
           {settingsService.wordFilterTypes.map(row =>
             <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
           )}
         </Select>
-        <TextField label="Filter" value={filter}
+        <TextField label="Filter" value={wordsUnitService.filter}
                    onChange={onFilterChange} onKeyPress={onFilterKeyPress}/>
         <Select
-          value={textbookFilter}
+          value={wordsUnitService.textbookFilter}
           onChange={onTextbookFilterChange}
         >
           {settingsService.textbookFilters.map(row =>
             <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
           )}
         </Select>
-        <Button variant="contained" color="primary" onClick={(e: any) => onReload}>
+        <Button variant="contained" color="primary" onClick={(e: any) => onReload()}>
           <span><FontAwesomeIcon icon={faSync} />Refresh</span>
         </Button>
         <Button variant="contained" color="primary" onClick={() => showDetailDialog(0)}>
@@ -163,8 +157,8 @@ export default function WordsTextbook2() {
               rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
               colSpan={10}
               count={wordsUnitService.textbookWordCount}
-              rowsPerPage={rows}
-              page={page - 1}
+              rowsPerPage={wordsUnitService.rows}
+              page={wordsUnitService.page - 1}
               SelectProps={{
                 native: true,
               }}
@@ -249,8 +243,8 @@ export default function WordsTextbook2() {
               rowsPerPageOptions={settingsService.USROWSPERPAGEOPTIONS}
               colSpan={10}
               count={wordsUnitService.textbookWordCount}
-              rowsPerPage={rows}
-              page={page - 1}
+              rowsPerPage={wordsUnitService.rows}
+              page={wordsUnitService.page - 1}
               SelectProps={{
                 native: true,
               }}
