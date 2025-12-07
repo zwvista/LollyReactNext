@@ -23,7 +23,6 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { googleString } from '@/shared/common/common';
 import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
-import { ReactNode } from 'react';
 import { AppService } from '@/shared/view-models/misc/app.service';
 import { PatternsService } from '@/shared/view-models/wpp/patterns.service';
 import PatternsDetail2 from "@/components/PatternsDetail2";
@@ -59,8 +58,8 @@ export default function Patterns2() {
     onReload();
   };
 
-  const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
-    patternsService.filterType = Number(e.target.value);
+  const onFilterScopeChange = (e: SelectChangeEvent) => {
+    patternsService.filterScope = e.target.value;
     onReload();
   };
 
@@ -97,11 +96,11 @@ export default function Patterns2() {
     <div>
       <Toolbar>
         <Select
-          value={patternsService.filterType}
-          onChange={onFilterTypeChange}
+          value={patternsService.filterScope}
+          onChange={onFilterScopeChange}
         >
-          {settingsService.patternFilterTypes.map(row =>
-            <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
+          {patternsService.scopeFilters.map(row =>
+            <MenuItem value={row} key={row}>{row}</MenuItem>
           )}
         </Select>
         <TextField label="Filter" value={patternsService.filter}

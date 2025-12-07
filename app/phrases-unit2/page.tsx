@@ -55,8 +55,8 @@ export default function PhrasesUnit2() {
     onReload();
   };
 
-  const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
-    phrasesUnitService.filterType = Number(e.target.value);
+  const onFilterScopeChange = (e: SelectChangeEvent) => {
+    phrasesUnitService.filterScope = e.target.value;
     onReload();
   };
 
@@ -92,11 +92,11 @@ export default function PhrasesUnit2() {
     <div>
       <Toolbar>
         <Select
-          value={phrasesUnitService.filterType}
-          onChange={onFilterTypeChange}
+          value={phrasesUnitService.filterScope}
+          onChange={onFilterScopeChange}
         >
-          {settingsService.phraseFilterTypes.map(row =>
-            <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
+          {phrasesUnitService.scopeFilters.map(row =>
+            <MenuItem value={row} key={row}>{row}</MenuItem>
           )}
         </Select>
         <TextField label="Filter" value={phrasesUnitService.filter}

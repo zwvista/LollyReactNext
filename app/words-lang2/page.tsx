@@ -32,7 +32,6 @@ import { KeyboardEvent } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { MLangWord } from '@/shared/models/wpp/lang-word';
-import { ReactNode } from 'react';
 import { AppService } from '@/shared/view-models/misc/app.service';
 import WordsLangDetail2 from "@/components/WordsLangDetail2";
 import { useRouter } from "next/navigation";
@@ -69,8 +68,8 @@ export default function WordsLang2() {
     onReload();
   };
 
-  const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
-    wordsLangService.filterType = Number(e.target.value);
+  const onFilterScopeChange = (e: SelectChangeEvent) => {
+    wordsLangService.filterScope = e.target.value;
     onReload();
   };
 
@@ -121,11 +120,11 @@ export default function WordsLang2() {
     <div>
       <Toolbar>
         <Select
-          value={wordsLangService.filterType}
-          onChange={onFilterTypeChange}
+          value={wordsLangService.filterScope}
+          onChange={onFilterScopeChange}
         >
-          {settingsService.wordFilterTypes.map(row =>
-            <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
+          {wordsLangService.scopeFilters.map(row =>
+            <MenuItem value={row} key={row}>{row}</MenuItem>
           )}
         </Select>
         <TextField label="Filter" value={wordsLangService.filter}
