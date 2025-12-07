@@ -71,8 +71,8 @@ export default function WordsUnit2() {
     onReload();
   };
 
-  const onFilterScopeChange = (e: SelectChangeEvent) => {
-    wordsUnitService.filterScope = e.target.value;
+  const onFilterTypeChange = (e: SelectChangeEvent<number>) => {
+    wordsUnitService.filterType = e.target.value as number;
     onReload();
   };
 
@@ -144,11 +144,11 @@ export default function WordsUnit2() {
           </Fab>
         </Tooltip>
         <Select
-          value={wordsUnitService.filterScope}
-          onChange={onFilterScopeChange}
+          value={wordsUnitService.filterType}
+          onChange={onFilterTypeChange}
         >
-          {wordsUnitService.scopeFilters.map(row =>
-            <MenuItem value={row} key={row}>{row}</MenuItem>
+          {settingsService.wordFilterTypes.map(row =>
+            <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
           )}
         </Select>
         <TextField label="Filter" value={wordsUnitService.filter}

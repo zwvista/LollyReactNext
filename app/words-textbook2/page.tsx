@@ -31,6 +31,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { MUnitWord } from '@/shared/models/wpp/unit-word';
 import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
+import { ReactNode } from 'react';
 import { AppService } from '@/shared/view-models/misc/app.service';
 import WordsTextbookDetail2 from "@/components/WordsTextbookDetail2";
 import { useRouter } from "next/navigation";
@@ -67,12 +68,12 @@ export default function WordsTextbook2() {
     onReload();
   };
 
-  const onFilterScopeChange = (e: SelectChangeEvent) => {
-    wordsUnitService.filterScope = e.target.value;
+  const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
+    wordsUnitService.filterType = Number(e.target.value);
     onReload();
   };
 
-  const onTextbookFilterChange = (e: SelectChangeEvent<number>) => {
+  const onTextbookFilterChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
     wordsUnitService.textbookFilter = Number(e.target.value);
     onReload();
   };
@@ -125,11 +126,11 @@ export default function WordsTextbook2() {
     <div>
       <Toolbar>
         <Select
-          value={wordsUnitService.filterScope}
-          onChange={onFilterScopeChange}
+          value={wordsUnitService.filterType}
+          onChange={onFilterTypeChange}
         >
-          {wordsUnitService.scopeFilters.map(row =>
-            <MenuItem value={row} key={row}>{row}</MenuItem>
+          {settingsService.wordFilterTypes.map(row =>
+            <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
           )}
         </Select>
         <TextField label="Filter" value={wordsUnitService.filter}

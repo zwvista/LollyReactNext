@@ -24,6 +24,7 @@ import { PhrasesLangService } from '@/shared/view-models/wpp/phrases-lang.servic
 import { googleString } from '@/shared/common/common';
 import { SyntheticEvent, useEffect, useReducer, useState } from 'react';
 import { KeyboardEvent } from 'react';
+import { ReactNode } from 'react';
 import { AppService } from '@/shared/view-models/misc/app.service';
 import { MLangPhrase } from '@/shared/models/wpp/lang-phrase';
 import PhrasesLangDetail2 from "@/components/PhrasesLangDetail2";
@@ -59,8 +60,8 @@ export default function PhrasesLang2() {
     onReload();
   };
 
-  const onFilterScopeChange = (e: SelectChangeEvent) => {
-    phrasesLangService.filterScope = e.target.value;
+  const onFilterTypeChange = (e: SelectChangeEvent<number>, child: ReactNode) => {
+    phrasesLangService.filterType = Number(e.target.value);
     onReload();
   };
 
@@ -97,11 +98,11 @@ export default function PhrasesLang2() {
     <div>
       <Toolbar>
         <Select
-          value={phrasesLangService.filterScope}
-          onChange={onFilterScopeChange}
+          value={phrasesLangService.filterType}
+          onChange={onFilterTypeChange}
         >
-          {phrasesLangService.scopeFilters.map(row =>
-            <MenuItem value={row} key={row}>{row}</MenuItem>
+          {settingsService.phraseFilterTypes.map(row =>
+            <MenuItem value={row.value} key={row.value}>{row.label}</MenuItem>
           )}
         </Select>
         <TextField label="Filter" value={phrasesLangService.filter}
