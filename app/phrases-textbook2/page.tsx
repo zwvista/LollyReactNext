@@ -87,7 +87,6 @@ export default function PhrasesTextbook2() {
     if (!appService.isInitialized) return;
     (async () => {
       await appService.getData();
-      phrasesUnitService.rows = settingsService.USROWSPERPAGE;
       onReload();
     })();
   }, []);
